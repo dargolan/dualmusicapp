@@ -2,6 +2,8 @@
 
 A simple Android app that allows you to play Spotify podcasts and YouTube videos simultaneously with independent volume controls.
 
+**Latest Update**: Fixed build issues by removing Spotify App Remote dependency.
+
 ## Features
 
 - **YouTube Integration**: Embedded WebView for playing YouTube videos as background music
