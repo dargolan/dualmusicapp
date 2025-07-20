@@ -45,7 +45,6 @@ dependencies {
     
     // Spotify SDK
     implementation 'com.spotify.android:auth:2.1.1'
-    implementation 'com.spotify.android:app-remote:0.8.0'
     
     // YouTube Player
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0'

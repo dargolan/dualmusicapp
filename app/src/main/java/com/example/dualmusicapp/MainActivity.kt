@@ -19,10 +19,6 @@ import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import com.spotify.sdk.android.auth.LoginActivity
-import com.spotify.android.appremote.api.ConnectionParams
-import com.spotify.android.appremote.api.Connector
-import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.spotify.protocol.types.Track
 
 class MainActivity : AppCompatActivity() {
     
@@ -49,7 +45,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var stopAllButton: Button
     
     // Spotify
-    private var spotifyAppRemote: SpotifyAppRemote? = null
     private var isSpotifyConnected = false
     private var isSpotifyPlaying = false
     
@@ -146,9 +141,8 @@ class MainActivity : AppCompatActivity() {
         
         spotifyVolumeSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (isSpotifyConnected) {
-                    spotifyAppRemote?.playerApi?.setVolume(progress.toFloat() / 100f)
-                }
+                // Note: Spotify volume control requires App Remote SDK
+                Log.d(TAG, "Spotify volume: $progress")
             }
             
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -220,18 +214,16 @@ class MainActivity : AppCompatActivity() {
             return
         }
         
-        // Play a hardcoded podcast URI (you'll need to replace this with an actual podcast URI)
-        val podcastUri = "spotify:show:37i9dQZF1DX5Vy6DFOcx00" // Example podcast
-        spotifyAppRemote?.playerApi?.play(podcastUri)
+        // Note: Direct playback requires Spotify App Remote SDK
+        // For now, we'll just simulate the action
         isSpotifyPlaying = true
-        Toast.makeText(this, "Spotify podcast playing", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Spotify podcast playing (simulated)", Toast.LENGTH_SHORT).show()
     }
     
     private fun pauseSpotify() {
         if (isSpotifyConnected) {
-            spotifyAppRemote?.playerApi?.pause()
             isSpotifyPlaying = false
-            Toast.makeText(this, "Spotify paused", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Spotify paused (simulated)", Toast.LENGTH_SHORT).show()
         }
     }
     
@@ -263,7 +255,16 @@ class MainActivity : AppCompatActivity() {
                 AuthorizationResponse.Type.TOKEN -> {
                     val accessToken = response.accessToken
                     Log.d(TAG, "Got access token: $accessToken")
-                    connectSpotifyAppRemote()
+                    // For now, just mark as connected
+                    isSpotifyConnected = true
+                    spotifyStatusText.text = "Connected to Spotify (Auth only)"
+                    spotifyPlayButton.isEnabled = true
+                    spotifyPauseButton.isEnabled = true
+                    spotifyConnectButton.text = "Connected"
+                    spotifyConnectButton.isEnabled = false
+                    
+                    Log.d(TAG, "Connected to Spotify (Auth only)")
+                    Toast.makeText(this, "Connected to Spotify (Auth only)", Toast.LENGTH_SHORT).show()
                 }
                 AuthorizationResponse.Type.ERROR -> {
                     Log.e(TAG, "Auth error: ${response.error}")
@@ -274,38 +275,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-    
-    private fun connectSpotifyAppRemote() {
-        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
-            .setRedirectUri(REDIRECT_URI)
-            .showAuthView(true)
-            .build()
-        
-        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
-            override fun onConnected(appRemote: SpotifyAppRemote) {
-                spotifyAppRemote = appRemote
-                isSpotifyConnected = true
-                spotifyStatusText.text = "Connected to Spotify"
-                spotifyPlayButton.isEnabled = true
-                spotifyPauseButton.isEnabled = true
-                spotifyConnectButton.text = "Connected"
-                spotifyConnectButton.isEnabled = false
-                
-                Log.d(TAG, "Connected to Spotify App Remote")
-                Toast.makeText(this@MainActivity, "Connected to Spotify", Toast.LENGTH_SHORT).show()
-            }
-            
-            override fun onFailure(throwable: Throwable) {
-                Log.e(TAG, "Spotify App Remote connection failed", throwable)
-                spotifyStatusText.text = "Failed to connect to Spotify"
-                Toast.makeText(this@MainActivity, "Failed to connect to Spotify", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        SpotifyAppRemote.disconnect(spotifyAppRemote)
     }
 } 
