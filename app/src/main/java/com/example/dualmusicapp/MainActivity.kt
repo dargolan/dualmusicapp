@@ -1,9 +1,6 @@
 package com.example.dualmusicapp
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.webkit.WebView
@@ -13,8 +10,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -27,7 +22,6 @@ class MainActivity : AppCompatActivity() {
         private const val CLIENT_ID = "c456142fb93a42929545aa059ddd0347"
         private const val REDIRECT_URI = "dualmusicapp://callback"
         private const val AUTH_TOKEN_REQUEST_CODE = 0x10
-        private const val PERMISSION_REQUEST_CODE = 0x11
     }
     
     // UI Elements
@@ -52,20 +46,15 @@ class MainActivity : AppCompatActivity() {
     private var isYouTubePlaying = false
     private val youtubeVideoId = "dQw4w9WgXcQ" // Rick Roll as default example
     
-    // Audio Manager
-    private lateinit var audioManager: AudioManager
-    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
         initializeViews()
-        setupAudioManager()
         setupYouTubeWebView()
         setupSpotify()
         setupVolumeControls()
         setupGlobalControls()
-        checkPermissions()
     }
     
     private fun initializeViews() {
@@ -81,10 +70,6 @@ class MainActivity : AppCompatActivity() {
         playAllButton = findViewById(R.id.playAllButton)
         pauseAllButton = findViewById(R.id.pauseAllButton)
         stopAllButton = findViewById(R.id.stopAllButton)
-    }
-    
-    private fun setupAudioManager() {
-        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
     }
     
     private fun setupYouTubeWebView() {
@@ -164,16 +149,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) 
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.INTERNET),
-                PERMISSION_REQUEST_CODE
-            )
-        }
-    }
+
     
     private fun connectToSpotify() {
         val builder = AuthorizationRequest.Builder(
