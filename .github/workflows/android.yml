@@ -22,9 +22,6 @@ jobs:
 
     - name: Setup Gradle Wrapper
       run: |
-        curl -L -o gradle-wrapper.jar https://github.com/gradle/gradle/raw/v7.6.1/gradle/wrapper/gradle-wrapper.jar
-        mkdir -p gradle/wrapper/
-        mv gradle-wrapper.jar gradle/wrapper/
         chmod +x gradlew
         ls -la gradle/wrapper/
         
