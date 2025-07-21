@@ -1,4 +1,4 @@
-# Simple Android App
+# Simple Android App - Updated
 
 A minimal Android application that demonstrates basic functionality.
 
